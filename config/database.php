@@ -78,6 +78,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'pgsql_con' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => 'ec2-54-235-246-201.compute-1.amazonaws.com',
+            'port' => '5432',
+            'database' => 'dckhqbeuu2aatj',
+            'username' => 'gkoopintbxwrjg',
+            'password' => 'c07142fd5a8d19c53c2327c111c1732e29212224088a123c6e54fcf1846868f7',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

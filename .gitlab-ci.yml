@@ -1,0 +1,42 @@
+stages:
+  - preparation
+  - deploy
+
+composer:
+  stage: preparation
+  image: lorisleiva/laravel-docker:latest
+
+  script:
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+
+  artifacts:
+    paths:
+      - vendor/
+    expire_in: 1 days
+    when: always
+
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-composer
+    paths:
+      - vendor/
+
+production:
+  stage: deploy
+  image: lorisleiva/laravel-docker:latest
+  variables:
+    HEROKU_API_KEY: $HEROKU_PRODUCTION_API_KEY
+
+  script:
+    - apk add ruby ruby-dev ruby-irb ruby-rake ruby-io-console ruby-bigdecimal ruby-json ruby-bundler yarn ruby-rdoc >> /dev/null
+    - apk update
+    - gem install dpl >> /dev/null
+    - dpl --provider=heroku --app=siescola --api-key=$HEROKU_API_KEY
+    - yarn global add heroku@$HEROKU_CLI_VERSION
+    - yarn global add heroku@$HEROKU_CLI_VERSION
+    - heroku git:remote -a siescola
+    - heroku config
+    - heroku config:set APP_KEY=$(php artisan --no-ansi key:generate --show)
+    - heroku run php artisan migrate --force --exit-code --app siescola
+
+  only:
+  - master
