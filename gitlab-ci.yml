@@ -19,10 +19,40 @@ composer:
     key: ${CI_COMMIT_REF_SLUG}-composer
     paths:
       - vendor/
+      
+npm:
 
+  # Same stage as `composer` so that they run in parallel.
+  stage: preparation
+  image: edbizarro/gitlab-ci-pipeline-php:7.3
+
+  # Cache the `node_modules` folder
+  # using the `npm` suffix on the key.
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - node_modules/
+
+  # Install and compile.
+  script:
+      - sudo npm install
+      - sudo npm run production
+
+  # Provide the other jobs of the pipeline with
+  # the node dependencies and the compiled assets.
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - node_modules/
+      - public/css/
+      - public/js/
+      
 production:
   stage: deploy
   image: lorisleiva/laravel-docker:latest
+  dependencies:
+    - composer
+    - npm
   variables:
     HEROKU_API_KEY: $HEROKU_PRODUCTION_API_KEY
 
