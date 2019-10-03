@@ -65,7 +65,6 @@ production:
     - yarn global add heroku@$HEROKU_CLI_VERSION
     - heroku git:remote -a siescola
     - heroku config
-    - heroku config:set APP_KEY=$(php artisan --no-ansi key:generate --show)
     - heroku run php artisan migrate --force --exit-code --app siescola
 
   only:
